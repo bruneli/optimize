@@ -148,11 +148,11 @@ class quantity:
     def getname(self):
         """Returns as a string the name of the physical variable 
         including its unit."""
-        return self.name+' '+self.unit.symbol
+        return self.name+' '+self.unit.getsymbol()
 
     def __repr__(self):
         """Returns value plus its unit."""
-        return str(self.value)+' '+self.unit.symbol
+        return str(self.value)+' '+self.unit.getsymbol()
 
     def _copy(self,other,**kwargs):
         self.name = kwargs.get('name',other.name)

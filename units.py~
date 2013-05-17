@@ -6,7 +6,7 @@ import math
 
 import scipy.constants
 
-from basic import unit, converter
+from pyphys.basic import unit, converter
 
 # Multiples
 deca  = converter("dc","deca", scipy.constants.deka)
