@@ -10,6 +10,8 @@
 #ifndef OPTIMIZE_PYBINDINGS_HPP
 #define OPTIMIZE_PYBINDINGS_HPP
 
+#include <exception>
+#include <string>
 #include <boost/python.hpp>
 #include "optimize/function.hpp"
 
@@ -19,10 +21,12 @@ namespace optimize {
 /*!
   \param cb callable python object
   \param x0 tuple containing starting coordinates
+  \param method algorithm name: Nelder-Mead, BFGS
   \return tuple with coordinates of variables at their local minimum
 */
 boost::python::tuple minimize(PyObject * cb,
-                              boost::python::tuple& x0);
+                              boost::python::tuple& x0,
+                              std::string method = "Nelder-Mead");
 
 //! Wrapper to a real-valued objective function
 class pyf : public function
@@ -44,6 +48,9 @@ class pyf : public function
  private:
   PyObject* pycb_; ///< Callable python function
 };
+
+//! Translate the C++ exception to a Python exception
+void translate(std::runtime_error const& e);
 
 } // namespace optimize
 

@@ -6,8 +6,9 @@ a python function via the pybindings interface.
 
 """
 
-import time
 import math
+import random
+import time
 import scipy.optimize as sciopt
 try:
     import liboptimize as cppopt
@@ -26,50 +27,45 @@ def myf(x):
 def main():
     x0 = (2., 2., 2.)
     niter = 2000
-    avg_time = [0., 0.]
-    std_time = [0., 0.]
-    avg_dist = [0., 0.] # Euclidean distance between estimate and truth
-    std_dist = [0., 0.]
+    nalgos = 4
+    avg_time = [0.]*nalgos
+    std_time = [0.]*nalgos
+    avg_dist = [0.]*nalgos # Euclidean distance between estimate and truth
+    std_dist = [0.]*nalgos
     for iter in range(niter):
         if niter <= 10 or iter % (niter / 10) == 0:
             print 'Starting iteration',iter,'/',niter
-        start = time.time()
-        res1 = cppopt.minimize(myf, x0)
-        end = time.time()
-        delta = end-start
-        dist  = math.sqrt(math.pow(res1[0] - 0.5, 2) + \
-                          math.pow(res1[1] - 2., 2) + \
-                          math.pow(res1[2] + 1, 2))
-        avg_time[0] += delta
-        avg_dist[0] += dist
-        if iter:
-            std_time[0] += math.pow(iter * delta - avg_time[0], 2)/ \
-                           (iter * (iter  + 1))
-            std_dist[0] += math.pow(iter * dist - avg_dist[0], 2)/ \
-                           (iter * (iter  + 1))
-        start = time.time()
-        res2 = sciopt.fmin(myf, x0, disp=False)
-        end = time.time()
-        delta = end-start
-        dist  = math.sqrt(math.pow(res2[0] - 0.5, 2) + \
-                          math.pow(res2[1] - 2., 2) + \
-                          math.pow(res2[2] + 1, 2))
-        avg_time[1] += delta
-        avg_dist[1] += dist
-        if iter:
-            std_time[1] += math.pow(iter * delta - avg_time[1], 2)/ \
-                           (iter * (iter  + 1))
-            std_dist[1] += math.pow(iter * dist - avg_dist[1], 2)/ \
-                           (iter * (iter  + 1))
+        seq = range(nalgos)
+        random.shuffle(seq)
+        for i in seq:
+            start = time.time()
+            if i == 0:
+                res = cppopt.minimize(myf, x0)
+            elif i == 1:
+                res = sciopt.fmin(myf, x0, disp=False)
+            elif i == 2:
+                res = cppopt.minimize(myf, x0, method="BFGS")
+            else:
+                res = sciopt.fmin_bfgs(myf, x0, disp=False)
+            end = time.time()
+            delta = end-start
+            dist  = math.sqrt(math.pow(res[0] - 0.5, 2) + \
+                              math.pow(res[1] - 2., 2) + \
+                              math.pow(res[2] + 1, 2))
+            avg_time[i] += delta
+            avg_dist[i] += dist
+            if iter:
+                std_time[i] += math.pow(iter * delta - avg_time[i], 2)/ \
+                                        (iter * (iter  + 1))
+                std_dist[i] += math.pow(iter * dist - avg_dist[i], 2)/ \
+                                        (iter * (iter  + 1))
     print 'number of iterations =',niter
-    std = math.sqrt(std_time[0])/niter
-    print 'C++   avg time = %7.6f +- %7.6f' % (avg_time[0]/niter,std)
-    std = math.sqrt(std_dist[0])/niter
-    print 'C++   avg dist = %7.6f +- %7.6f' % (avg_dist[0]/niter,std)
-    std = math.sqrt(std_time[1])/niter
-    print 'scipy avg time = %7.6f +- %7.6f' % (avg_time[1]/niter,std)
-    std = math.sqrt(std_dist[1])/niter
-    print 'scipy avg dist = %7.6f +- %7.6f' % (avg_dist[1]/niter,std)
+    for i,name in enumerate(['Nelder-Mead (C++)','Nelder-Mead (scipy)',
+                             'BFGS (C++)','BFGS (scipy)']):
+        std = math.sqrt(std_time[i])/niter
+        print '%20s avg time = %7.6f +- %7.6f' % (name,avg_time[i]/niter,std)
+        std = math.sqrt(std_dist[i])/niter
+        print '%20s avg dist = %7.6f +- %7.6f' % (name,avg_dist[i]/niter,std)
 
 if __name__ == "__main__":
     main()
