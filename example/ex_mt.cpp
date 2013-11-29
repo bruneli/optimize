@@ -1,5 +1,5 @@
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 // The boost headers
 #include <boost/bind.hpp>
@@ -91,7 +91,7 @@ double likelihood::eval(double * const params) const
   }
   for (unsigned int is = 0; is < ns_; is++) {
     double loc = params[np_+is];
-    if (isnan(loc)) loc = 0.;
+    //if (isnan(loc)) loc = 0.;
     if (loc > 20.) loc = 20.;
     if (loc < -20.) loc = -20.;
     boost::math::normal pdf_syst(loc);

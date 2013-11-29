@@ -1,14 +1,11 @@
-set(Boost_USE_STATIC_LIBS OFF) 
-set(Boost_USE_MULTITHREADED ON)  
-set(Boost_USE_STATIC_RUNTIME OFF)
-#set(BOOST_ROOT /usr/local/boost/boost_1_54_0)
-#set(BOOST_INCLUDEDIR /usr/local/boost/boost_1_54_0/include)
-#set(BOOST_LIBRARYDIR /usr/local/boost/boost_1_54_0/lib)
-find_package(Boost COMPONENTS thread REQUIRED) 
-if(Boost_FOUND)
+find_library(optimizelib NAMES optimize HINTS ${CMAKE_SOURCE_DIR}/lib 
+    ${CMAKE_SOURCE_DIR}/lib/Debug ${CMAKE_SOURCE_DIR}/lib/Release})
+find_package(Boost COMPONENTS thread date_time system REQUIRED)
+if(Boost_FOUND AND optimizelib)
+    message("optimize library is ${optimizelib}")
     include_directories(${Boost_INCLUDE_DIRS})
     add_executable(ex_find_mle ex_find_mle.cpp)
-    target_link_libraries(ex_find_mle optimize)
+    target_link_libraries(ex_find_mle ${optimizelib})
     set_target_properties(ex_find_mle
         PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
     )
@@ -18,7 +15,7 @@ if(Boost_FOUND)
 
     include_directories(${Boost_INCLUDE_DIRS})
     add_executable(ex_mt ex_mt.cpp)
-    target_link_libraries(ex_mt ${Boost_LIBRARIES} optimize)
+    target_link_libraries(ex_mt ${Boost_LIBRARIES} ${optimizelib})
     set_target_properties(ex_mt
         PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
     )

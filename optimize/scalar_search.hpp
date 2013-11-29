@@ -48,7 +48,8 @@ int bracket(t_boofunc & func, double x0, double h,
   \param max_iter maximum number of iterations
   \return 0 if a minimum has been found
  */
-int bracket(const t_func_obj & func, void * obj, double x0, double h,
+int bracket(const t_func_obj & func, void * obj, 
+            double x0, double h,
             double & a, double & b,
             double c=1.6118033989, unsigned int max_iter= 100);
 
@@ -77,11 +78,9 @@ int bracket(function * const func, double x0, double h,
   \return coordinate of the local minimum
  */
 // @{
-double minimize_1d_golden(const t_func & func, 
-                          double a, double b,
+double minimize_1d_golden(const t_func & func, double a, double b,
                           double & fmin, double tol=1.e-9);
-double minimize_1d_golden(t_boofunc & func, 
-                          double a, double b,
+double minimize_1d_golden(t_boofunc & func, double a, double b,
                           double & fmin, double tol=1.e-9);
 // @}
 
@@ -108,7 +107,8 @@ double minimize_1d_golden(const t_func_obj & func, void * obj,
   \param tol  tolerance error
   \return coordinate of the local minimum
  */
-double minimize_1d_golden(function * const func, double a, double b,
+double minimize_1d_golden(function * const func,
+                          double a, double b,
                           double & fmin, double tol=1.e-9);
 
 } // namespace optimize
